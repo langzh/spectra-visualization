@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>光谱数据对比平台</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body{font-family:Arial;margin:20px}
+    #plot{height:500px;border:1px solid #ddd}
+    .controls{margin:20px 0}
+    button{margin:5px}
+  </style>
+</head>
+<body>
+  <h1>光谱数据可视化平台</h1>
+  <div class="controls">
+    <label>选择光谱：</label>
+    <select id="spectra-select" multiple size="5" style="width:200px"></select>
+    <button onclick="plotSelected()">绘制选中光谱</button>
+  </div>
+  <div id="plot"></div>
+
+  <script>
+    // 从JSON文件加载光谱数据（后台更新此文件即可）
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        window.spectraData = data;
+        // 填充下拉列表
+        const select = document.getElementById('spectra-select');
+        data.forEach((spec, i) => {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = spec.name;
+          select.appendChild(option);
+        });
+      });
+
+    // 绘制选中的光谱
+    function plotSelected() {
+      const select = document.getElementById('spectra-select');
+      const selectedIndices = Array.from(select.selectedOptions).map(opt => parseInt(opt.value));
+      if (selectedIndices.length === 0) {
+        alert('请选择至少一个光谱');
+        return;
+      }
+
+      const traces = selectedIndices.map(i => {
+        const spec = window.spectraData[i];
+        return {
+          x: spec.wavelength,
+          y: spec.intensity,
+          name: spec.name,
+          mode: 'lines'
+        };
+      });
+
+      const layout = {
+        title: '光谱对比图',
+        xaxis: { title: '波长 (nm)' },
+        yaxis: { title: '强度/吸光度' },
+        showlegend: true
+      };
+
+      Plotly.newPlot('plot', traces, layout);
+    }
+  </script>
+</body>
+</html>
