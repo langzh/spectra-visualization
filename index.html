@@ -7,25 +7,28 @@
     body{font-family:Arial;margin:20px}
     #plot{height:500px;border:1px solid #ddd}
     .controls{margin:20px 0}
-    button{margin:5px}
+    button{margin:5px;padding:4px 12px}
   </style>
 </head>
 <body>
   <h1>光谱数据可视化平台</h1>
   <div class="controls">
-    <label>选择光谱：</label>
+    <label>选择光谱（按住Ctrl多选，可叠加对比）：</label>
     <select id="spectra-select" multiple size="5" style="width:200px"></select>
     <button onclick="plotSelected()">绘制选中光谱</button>
   </div>
   <div id="plot"></div>
 
   <script>
-    // 从JSON文件加载光谱数据（后台更新此文件即可）
+    // 预设区分度高的配色，多条曲线不会撞色
+    const colorList = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22'];
+    let spectraData = [];
+
+    // 读取data.json光谱库
     fetch('data.json')
       .then(response => response.json())
       .then(data => {
-        window.spectraData = data;
-        // 填充下拉列表
+        spectraData = data;
         const select = document.getElementById('spectra-select');
         data.forEach((spec, i) => {
           const option = document.createElement('option');
@@ -35,27 +38,31 @@
         });
       });
 
-    // 绘制选中的光谱
     function plotSelected() {
       const select = document.getElementById('spectra-select');
       const selectedIndices = Array.from(select.selectedOptions).map(opt => parseInt(opt.value));
       if (selectedIndices.length === 0) {
-        alert('请选择至少一个光谱');
+        alert('请至少选择一条光谱');
         return;
       }
 
-      const traces = selectedIndices.map(i => {
-        const spec = window.spectraData[i];
+      // 批量生成多条曲线，分配不同颜色
+      const traces = selectedIndices.map((idx, arrIndex) => {
+        const spec = spectraData[idx];
         return {
           x: spec.wavelength,
           y: spec.intensity,
           name: spec.name,
-          mode: 'lines'
+          mode: 'lines',
+          line: {
+            width: 2,
+            color: colorList[arrIndex % colorList.length]
+          }
         };
       });
 
       const layout = {
-        title: '光谱对比图',
+        title: '多光谱叠加对比图',
         xaxis: { title: '波长 (nm)' },
         yaxis: { title: '强度/吸光度' },
         showlegend: true
