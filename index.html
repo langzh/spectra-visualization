@@ -6,16 +6,65 @@
   <style>
     body{font-family:Arial;margin:20px}
     #plot{height:500px;border:1px solid #ddd}
-    .controls{margin:20px 0}
-    button{margin:5px;padding:4px 12px}
+    .controls{margin:20px 0;display:flex;align-items:flex-start;gap:30px;}
+    .operate-box{}
+    table.desc-table{
+      border-collapse: collapse;
+      min-width: 480px;
+    }
+    .desc-table td, .desc-table th{
+      border:1px solid #999;
+      padding:6px 10px;
+      font-size:14px;
+    }
+    .desc-table th{
+      background:#f0f0f0;
+    }
+    button{margin-top:8px;padding:4px 12px}
   </style>
 </head>
 <body>
   <h1>光谱数据可视化平台</h1>
   <div class="controls">
-    <label>选择光谱（按住Ctrl多选，可叠加对比）：</label>
-    <select id="spectra-select" multiple size="5" style="width:200px"></select>
-    <button onclick="plotSelected()">绘制选中光谱</button>
+    <div class="operate-box">
+      <label>选择光谱（按住Ctrl多选，可叠加对比）：</label>
+      <select id="spectra-select" multiple size="5" style="width:200px"></select>
+      <br>
+      <button onclick="plotSelected()">绘制选中光谱</button>
+    </div>
+    <!-- 右侧3行7列说明表格 -->
+    <div>
+      <h4>实验信息/操作说明表</h4>
+      <table class="desc-table">
+        <tr>
+          <th>参数</th>     // 第一行 第一列
+          <th>PG2000PRO</th>     // 第一行 第贰列
+          <th>PG2000EVO</th> 
+          <th>MAYA2000PRO-S</th>
+          <th>MAYA2000PRO-L</th>
+          <th>FX2000L+/th>
+          <th>FLAMET</th>
+        </tr>
+        <tr>
+          <td>狭缝</td>// 第二行 第一列
+          <td>50μm</td>
+          <td>25μm</td>
+          <td>25μm</td>
+          <td>5μm</td>
+          <td>25μm</td>
+          <td>无狭缝</td>
+        </tr>
+        <tr>
+          <td>波长范围</td>
+          <td>198.725-1124.728nm</td>
+          <td>336.249-784.755nm</td>
+          <td>196.00-339.51nm</td>
+          <td>199.1-656.54nm</td>
+          <td>192.647-844.277nm</td>
+          <td>568.09-855.77nm</td>
+        </tr>
+      </table>
+    </div>
   </div>
   <div id="plot"></div>
 
